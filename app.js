@@ -1,6 +1,8 @@
 const express = require('express');
 
 const mongoose = require('mongoose');
+const user = require('./routes/userRoutes');
+const article = require('./routes/articleRoutes');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -11,6 +13,8 @@ mongoose.connect('mongodb://localhost:27017/newsexplorer', {
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
+app.use(user);
+app.use(article);
 
 app.listen(PORT, () => {
   // if everything is working, console shows which port app is listening to
