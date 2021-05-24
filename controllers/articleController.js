@@ -18,13 +18,13 @@ function getArticles(req, res, next) {
     })
     .catch(next);
 }
-
+//  owner: req.user._id put inside article create maybe?
 function createArticle(req, res, next) {
   const {
     keyword, title, text, date, source, link, image,
   } = req.body;
   Article.create({
-    keyword, title, text, date, source, link, image, owner: req.user._id,
+    keyword, title, text, date, source, link, image,
   })
     .then((article) => {
       res.send(article);
@@ -36,7 +36,8 @@ function createArticle(req, res, next) {
 }
 
 function deleteArticle(req, res, next) {
-  Article.findByIdAndDelete(req.params.articleId)
+  console.log(req.params);
+  Article.findByIdAndRemove(req.params.articleId)
     .then((article) => {
       if (!article) {
         throw new NotFoundError('Article not found');

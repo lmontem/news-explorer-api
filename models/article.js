@@ -41,9 +41,9 @@ const articleSchema = new mongoose.Schema({
       message: 'Invalid link',
     },
   },
-  owner: {
+  /* owner: {
     type: mongoose.ObjectId,
     required: true,
-  },
+  }, */
 });
 module.exports = mongoose.model('article', articleSchema);

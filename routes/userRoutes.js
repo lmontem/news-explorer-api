@@ -5,3 +5,5 @@ const { getUserInfo } = require('../controllers/userController');
 
 router.use(bodyParser.json());
 router.get('/users/me', getUserInfo);
+
+module.exports = router;

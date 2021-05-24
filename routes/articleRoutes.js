@@ -6,4 +6,5 @@ const { getArticles, createArticle, deleteArticle } = require('../controllers/ar
 router.use(bodyParser.json());
 router.get('/articles', getArticles);
 router.post('/articles', createArticle);
-router.delete('/articles/articleId', deleteArticle);
+router.delete('/articles/:articleId', deleteArticle);
+module.exports = router;

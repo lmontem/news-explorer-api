@@ -1,6 +1,7 @@
 const express = require('express');
 
 const mongoose = require('mongoose');
+// const { celebrate, Joi } = require('celebrate');
 const user = require('./routes/userRoutes');
 const article = require('./routes/articleRoutes');
 
@@ -15,6 +16,11 @@ mongoose.connect('mongodb://localhost:27017/newsexplorer', {
 });
 app.use(user);
 app.use(article);
+
+app.use((err, req, res, next) => {
+  res.status(err.statusCode).send({ message: (err.statusCode === 500) ? 'Error from server' : err.message });
+  next();
+});
 
 app.listen(PORT, () => {
   // if everything is working, console shows which port app is listening to
