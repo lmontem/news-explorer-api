@@ -18,7 +18,7 @@ function getArticles(req, res, next) {
     })
     .catch(next);
 }
-//  owner: req.user._id put inside article create maybe?
+
 function createArticle(req, res, next) {
   const {
     keyword, title, text, date, source, link, image,
@@ -30,13 +30,12 @@ function createArticle(req, res, next) {
       res.send(article);
     })
     .catch((err) => {
-      if (err.name === 'ValidatorError') { throw new InvalidError('Invalid data'); }
+      if (err.name === 'ValidationError') { throw new InvalidError('Invalid data'); }
     })
     .catch(next);
 }
 
 function deleteArticle(req, res, next) {
-  console.log(req.params);
   Article.findByIdAndRemove(req.params.articleId)
     .then((article) => {
       if (!article) {

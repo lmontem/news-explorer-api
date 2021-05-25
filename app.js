@@ -2,7 +2,7 @@ const express = require('express');
 
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-// const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 const user = require('./routes/userRoutes');
 const article = require('./routes/articleRoutes');
 const { createUser, loginUser } = require('./controllers/userController');
@@ -19,8 +19,19 @@ mongoose.connect('mongodb://localhost:27017/newsexplorer', {
 app.use(user);
 app.use(article);
 app.use(bodyParser.json());
-app.post('/signup', createUser);
-app.post('/signin', loginUser);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+    name: Joi.string().required().min(2).max(30),
+  }),
+}), createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), loginUser);
 
 app.use((err, req, res, next) => {
   res.status(err.statusCode).send({ message: (err.statusCode === 500) ? 'Error from server' : err.message });
