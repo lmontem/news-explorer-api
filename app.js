@@ -2,9 +2,10 @@ const express = require('express');
 
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const user = require('./routes/userRoutes');
 const article = require('./routes/articleRoutes');
+const { requestLogger, errorLogger } = require('./middleware/logger');
 const { createUser, loginUser } = require('./controllers/userController');
 
 const app = express();
@@ -18,6 +19,7 @@ mongoose.connect('mongodb://localhost:27017/newsexplorer', {
 });
 app.use(user);
 app.use(article);
+app.use(requestLogger); // enabling the request logger
 app.use(bodyParser.json());
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -33,6 +35,11 @@ app.post('/signin', celebrate({
   }),
 }), loginUser);
 
+app.use(errorLogger); // enabling the error logger
+
+app.use(errors()); // celebrate error handler
+
+// centralized error handling
 app.use((err, req, res, next) => {
   res.status(err.statusCode).send({ message: (err.statusCode === 500) ? 'Error from server' : err.message });
   next();
