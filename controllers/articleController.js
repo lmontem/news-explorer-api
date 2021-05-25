@@ -24,7 +24,7 @@ function createArticle(req, res, next) {
     keyword, title, text, date, source, link, image,
   } = req.body;
   Article.create({
-    keyword, title, text, date, source, link, image,
+    keyword, title, text, date, source, link, image, owner: req.user._id,
   })
     .then((article) => {
       res.send(article);
