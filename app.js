@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
+const helmet = require('helmet');
+const { limiter } = require('./middleware/rateLimiter');
 const user = require('./routes/userRoutes');
 const article = require('./routes/articleRoutes');
 const { requestLogger, errorLogger } = require('./middleware/logger');
@@ -34,7 +36,8 @@ app.post('/signin', celebrate({
     password: Joi.string().required().min(8),
   }),
 }), loginUser);
-
+app.use(helmet());
+app.use(limiter);
 app.use(errorLogger); // enabling the error logger
 
 app.use(errors()); // celebrate error handler
