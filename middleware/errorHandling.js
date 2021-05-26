@@ -26,6 +26,13 @@ class MongoError extends Error {
   }
 }
 
+class PermissionError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 403;
+  }
+}
+
 module.exports = {
-  NotFoundError, InvalidError, AuthError, MongoError,
+  NotFoundError, InvalidError, AuthError, MongoError, PermissionError,
 };
