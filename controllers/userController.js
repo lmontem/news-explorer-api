@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
 const {
   NotFoundError, InvalidError, MongoError, AuthError,
@@ -56,7 +58,7 @@ function loginUser(req, res, next) {
           if (!match) {
             return Promise.reject(new Error('Incorrect email or password'));
           }
-          const token = jwt.sign({ _id: user._id }, 'secret key', { expiresIn: '7d' });
+          const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
           console.log(token);
           res.send({ token });
         });
