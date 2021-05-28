@@ -13,7 +13,7 @@ const { createUser, loginUser } = require('./controllers/userController');
 const { centralErrorHandling } = require('./middleware/errorHandling');
 
 const app = express();
-const { PORT, NODE_ENV, MONGO_URL } = process.env;
+const { PORT = 3000, NODE_ENV, MONGO_URL } = process.env;
 
 mongoose.connect((NODE_ENV, MONGO_URL), {
   useNewUrlParser: true,
