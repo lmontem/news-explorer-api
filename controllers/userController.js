@@ -1,11 +1,20 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
 const {
   NotFoundError, InvalidError, MongoError, AuthError,
 } = require('../middleware/errorHandling');
+const {
+  userNotFoundMessage,
+  invalidDataMessage,
+  duplicateMessage,
+  authMessage,
+  incorrectMessage,
+
+} = require('../constants/constants');
 
 // returns information about the logged-in user (email and name)
 
@@ -13,14 +22,14 @@ function getUserInfo(req, res, next) {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('User not found');
+        throw new NotFoundError(userNotFoundMessage);
       } else {
         return res.status(200).send({ email: user.email, name: user.name });
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') { throw new InvalidError('Invalid user'); }
-      if (err.name === 'NotFound') { throw new NotFoundError('User not found'); }
+      if (err.name === 'CastError') { throw new InvalidError(invalidDataMessage); }
+      if (err.name === 'NotFound') { throw new NotFoundError(userNotFoundMessage); }
     })
     .catch(next);
 }
@@ -28,19 +37,19 @@ function getUserInfo(req, res, next) {
 // creates/registers user
 
 function createUser(req, res, next) {
-  const { email, password, name } = req.body;
+  const {
+    email, password, name,
+  } = req.body;
   bcrypt.hash(password, 10)
-    .then((hash) => {
-      User.create({ email, password: hash, name });
-    })
-    .then(() => {
-      console.log(email);
-      res.send({ email, name });
-    })
+    .then((hash) => User.create({
+      email, password: hash, name,
+    }))
+    .then(() => res.send({
+      email, name,
+    }))
     .catch((err) => {
-      if (err.code === 11000 && err.name === 'MongoError') { throw new MongoError('Duplicate email'); }
-      if (err.name === 'ValidationError') { throw new InvalidError('Invalid user'); }
-      if (err.name === 'NotFound') { throw new NotFoundError('User not found'); }
+      if (err.code === 11000 && err.name === 'MongoError') { throw new MongoError(duplicateMessage); }
+      if (err.name === 'ValidationError') { throw new InvalidError(invalidDataMessage); }
     })
     .catch(next);
 }
@@ -51,20 +60,19 @@ function loginUser(req, res, next) {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Incorrect email or password'));
+        return Promise.reject(new Error(incorrectMessage));
       }
       return bcrypt.compare(password, user.password)
         .then((match) => {
           if (!match) {
-            return Promise.reject(new Error('Incorrect email or password'));
+            return Promise.reject(new Error(incorrectMessage));
           }
-          const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
-          console.log(token);
+          const token = jwt.sign({ _id: user._id }, NODE_ENV ? JWT_SECRET : JWT_SECRET, { expiresIn: '7d' });
           res.send({ token });
         });
     })
     .catch(() => {
-      throw new AuthError('Authorization Error');
+      throw new AuthError(authMessage);
     })
     .catch(next);
 }

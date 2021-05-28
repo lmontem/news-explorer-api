@@ -33,6 +33,11 @@ class PermissionError extends Error {
   }
 }
 
+function centralErrorHandling(err, req, res, next) {
+  res.status(err.statusCode).send({ message: (err.statusCode === 500) ? 'Error from server' : err.message });
+  next();
+}
+
 module.exports = {
-  NotFoundError, InvalidError, AuthError, MongoError, PermissionError,
+  NotFoundError, InvalidError, AuthError, MongoError, PermissionError, centralErrorHandling,
 };

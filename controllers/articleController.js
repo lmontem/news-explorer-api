@@ -1,6 +1,11 @@
 const Article = require('../models/article');
 const { NotFoundError, InvalidError, PermissionError } = require('../middleware/errorHandling');
-
+const {
+  articleNotFoundMessage,
+  invalidDataMessage,
+  permissionMessage,
+  deleteMessage,
+} = require('../constants/constants');
 /* returns all articles saved by the user
 GET /articles
 
@@ -30,7 +35,7 @@ function createArticle(req, res, next) {
       res.send(article);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') { throw new InvalidError('Invalid data'); }
+      if (err.name === 'ValidationError') { throw new InvalidError(invalidDataMessage); }
     })
     .catch(next);
 }
@@ -39,14 +44,14 @@ function deleteArticle(req, res, next) {
   Article.findById(req.params.articleId)
     .then((article) => {
       if (!article) {
-        throw new NotFoundError('Article not found');
+        throw new NotFoundError(articleNotFoundMessage);
       }
       if (String(article.owner) !== req.user._id) {
-        throw new PermissionError('You do not have permissions');
+        throw new PermissionError(permissionMessage);
       }
       return Article.deleteOne(article)
         .then(() => {
-          res.status(200).send({ message: 'Article deleted' });
+          res.status(200).send({ message: deleteMessage });
         });
     })
     .catch(next);

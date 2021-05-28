@@ -10,11 +10,12 @@ const user = require('./routes/userRoutes');
 const article = require('./routes/articleRoutes');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 const { createUser, loginUser } = require('./controllers/userController');
+const { centralErrorHandling } = require('./middleware/errorHandling');
 
 const app = express();
-const { PORT = 3000 } = process.env;
+const { PORT, NODE_ENV, MONGO_URL } = process.env;
 
-mongoose.connect('mongodb://localhost:27017/newsexplorer', {
+mongoose.connect((NODE_ENV, MONGO_URL), {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -44,10 +45,7 @@ app.use(errorLogger); // enabling the error logger
 app.use(errors()); // celebrate error handler
 
 // centralized error handling
-app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({ message: (err.statusCode === 500) ? 'Error from server' : err.message });
-  next();
-});
+app.use(centralErrorHandling);
 
 app.listen(PORT, () => {
   // if everything is working, console shows which port app is listening to
