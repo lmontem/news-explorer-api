@@ -5,6 +5,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const helmet = require('helmet');
+const cors = require('cors');
 const { limiter } = require('./middleware/rateLimiter');
 const user = require('./routes/userRoutes');
 const article = require('./routes/articleRoutes');
@@ -21,6 +22,7 @@ mongoose.connect((NODE_ENV, MONGO_URL), {
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
+app.use(cors());
 app.use(user);
 app.use(article);
 app.use(requestLogger); // enabling the request logger
