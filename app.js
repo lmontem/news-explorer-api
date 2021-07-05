@@ -49,7 +49,7 @@ app.use(errors()); // celebrate error handler
 // centralized error handling
 app.use(centralErrorHandling);
 
-app.listen(PORT, () => {
+app.listen(PORT, '127.0.0.1', () => {
   // if everything is working, console shows which port app is listening to
   console.log(`App listening at port ${PORT}`);
 });
