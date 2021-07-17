@@ -38,14 +38,14 @@ function getUserInfo(req, res, next) {
 
 function createUser(req, res, next) {
   const {
-    email, password, name,
+    email, password, username,
   } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      email, password: hash, name,
+      email, password: hash, username,
     }))
     .then(() => res.send({
-      email, name,
+      email, username,
     }))
     .catch((err) => {
       if (err.code === 11000 && err.name === 'MongoError') { throw new MongoError(duplicateMessage); }
