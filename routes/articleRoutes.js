@@ -9,7 +9,7 @@ router.get('/articles', auth, getArticles);
 router.post('/articles', auth, celebrate({
   body: Joi.object().keys({
     keyword: Joi.string().required().min(2).max(30),
-    title: Joi.string().required().min(2).max(90),
+    title: Joi.string().required().min(2),
     description: Joi.string().required().min(2),
     publishedAt: Joi.string().required(),
     source: Joi.string().required().min(2),
