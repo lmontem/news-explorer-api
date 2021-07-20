@@ -6,24 +6,20 @@ const {
   permissionMessage,
   deleteMessage,
 } = require('../constants/constants');
+
 /* returns all articles saved by the user
 GET /articles
-
-# creates an article with the passed
-# keyword, title, text, date, source, link, and image in the body
-POST /articles
-
-# deletes the stored article by _id
-DELETE /articles/articleId */
-
+*/
 function getArticles(req, res, next) {
-  Article.find({})
+  Article.find({ owner: req.user._id })
     .then((article) => {
       res.status(200).send(article);
     })
     .catch(next);
 }
 
+/* creates an article
+POST /articles */
 function createArticle(req, res, next) {
   const {
     keyword, title, description, publishedAt, source, url, urlToImage,
@@ -40,6 +36,8 @@ function createArticle(req, res, next) {
     .catch(next);
 }
 
+/* deletes the stored article by _id
+DELETE /articles/articleId */
 function deleteArticle(req, res, next) {
   Article.findById(req.params.articleId)
     .then((article) => {
